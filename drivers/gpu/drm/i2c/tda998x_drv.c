@@ -1475,7 +1475,7 @@ static const struct component_ops tda998x_ops = {
 };
 
 static int
-tda998x_probe(struct i2c_client *client, const struct i2c_device_id *id)
+tda998x_probe(struct i2c_client *client)
 {
 	return component_add(&client->dev, &tda998x_ops);
 }
@@ -1494,20 +1494,13 @@ static const struct of_device_id tda998x_dt_ids[] = {
 MODULE_DEVICE_TABLE(of, tda998x_dt_ids);
 #endif
 
-static struct i2c_device_id tda998x_ids[] = {
-	{ "tda998x", 0 },
-	{ }
-};
-MODULE_DEVICE_TABLE(i2c, tda998x_ids);
-
 static struct i2c_driver tda998x_driver = {
-	.probe = tda998x_probe,
+	.probe_new = tda998x_probe,
 	.remove = tda998x_remove,
 	.driver = {
 		.name = "tda998x",
 		.of_match_table = of_match_ptr(tda998x_dt_ids),
 	},
-	.id_table = tda998x_ids,
 };
 
 module_i2c_driver(tda998x_driver);
