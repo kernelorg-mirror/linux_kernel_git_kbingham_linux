@@ -482,8 +482,7 @@ static int adnp_irq_setup(struct adnp *adnp)
 	return 0;
 }
 
-static int adnp_i2c_probe(struct i2c_client *client,
-				    const struct i2c_device_id *id)
+static int adnp_i2c_probe(struct i2c_client *client)
 {
 	struct device_node *np = client->dev.of_node;
 	struct adnp *adnp;
@@ -520,12 +519,6 @@ static int adnp_i2c_probe(struct i2c_client *client,
 	return 0;
 }
 
-static const struct i2c_device_id adnp_i2c_id[] = {
-	{ "gpio-adnp" },
-	{ },
-};
-MODULE_DEVICE_TABLE(i2c, adnp_i2c_id);
-
 static const struct of_device_id adnp_of_match[] = {
 	{ .compatible = "ad,gpio-adnp", },
 	{ },
@@ -537,8 +530,7 @@ static struct i2c_driver adnp_i2c_driver = {
 		.name = "gpio-adnp",
 		.of_match_table = adnp_of_match,
 	},
-	.probe = adnp_i2c_probe,
-	.id_table = adnp_i2c_id,
+	.probe_new = adnp_i2c_probe,
 };
 module_i2c_driver(adnp_i2c_driver);
 
