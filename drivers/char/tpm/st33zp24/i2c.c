@@ -216,8 +216,7 @@ static int st33zp24_i2c_request_resources(struct i2c_client *client)
  * @return: 0 in case of success.
  *	 -1 in other case.
  */
-static int st33zp24_i2c_probe(struct i2c_client *client,
-			      const struct i2c_device_id *id)
+static int st33zp24_i2c_probe(struct i2c_client *client)
 {
 	int ret;
 	struct st33zp24_platform_data *pdata;
@@ -272,12 +271,6 @@ static int st33zp24_i2c_remove(struct i2c_client *client)
 	return st33zp24_remove(chip);
 }
 
-static const struct i2c_device_id st33zp24_i2c_id[] = {
-	{TPM_ST33_I2C, 0},
-	{}
-};
-MODULE_DEVICE_TABLE(i2c, st33zp24_i2c_id);
-
 static const struct of_device_id of_st33zp24_i2c_match[] = {
 	{ .compatible = "st,st33zp24-i2c", },
 	{}
@@ -300,9 +293,8 @@ static struct i2c_driver st33zp24_i2c_driver = {
 		.of_match_table = of_match_ptr(of_st33zp24_i2c_match),
 		.acpi_match_table = ACPI_PTR(st33zp24_i2c_acpi_match),
 	},
-	.probe = st33zp24_i2c_probe,
+	.probe_new = st33zp24_i2c_probe,
 	.remove = st33zp24_i2c_remove,
-	.id_table = st33zp24_i2c_id
 };
 
 module_i2c_driver(st33zp24_i2c_driver);
