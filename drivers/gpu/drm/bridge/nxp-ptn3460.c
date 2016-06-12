@@ -299,8 +299,7 @@ static const struct drm_bridge_funcs ptn3460_bridge_funcs = {
 	.attach = ptn3460_bridge_attach,
 };
 
-static int ptn3460_probe(struct i2c_client *client,
-				const struct i2c_device_id *id)
+static int ptn3460_probe(struct i2c_client *client)
 {
 	struct device *dev = &client->dev;
 	struct ptn3460_bridge *ptn_bridge;
@@ -374,12 +373,6 @@ static int ptn3460_remove(struct i2c_client *client)
 	return 0;
 }
 
-static const struct i2c_device_id ptn3460_i2c_table[] = {
-	{"ptn3460", 0},
-	{},
-};
-MODULE_DEVICE_TABLE(i2c, ptn3460_i2c_table);
-
 static const struct of_device_id ptn3460_match[] = {
 	{ .compatible = "nxp,ptn3460" },
 	{},
@@ -387,8 +380,7 @@ static const struct of_device_id ptn3460_match[] = {
 MODULE_DEVICE_TABLE(of, ptn3460_match);
 
 static struct i2c_driver ptn3460_driver = {
-	.id_table	= ptn3460_i2c_table,
-	.probe		= ptn3460_probe,
+	.probe_new 	= ptn3460_probe,
 	.remove		= ptn3460_remove,
 	.driver		= {
 		.name	= "nxp,ptn3460",
