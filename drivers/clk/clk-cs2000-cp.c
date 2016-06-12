@@ -68,12 +68,6 @@ static const struct of_device_id cs2000_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, cs2000_of_match);
 
-static const struct i2c_device_id cs2000_id[] = {
-	{ "cs2000-cp", },
-	{}
-};
-MODULE_DEVICE_TABLE(i2c, cs2000_id);
-
 #define cs2000_read(priv, addr) \
 	i2c_smbus_read_byte_data(priv_to_client(priv), addr)
 #define cs2000_write(priv, addr, val) \
@@ -459,8 +453,7 @@ static int cs2000_remove(struct i2c_client *client)
 	return 0;
 }
 
-static int cs2000_probe(struct i2c_client *client,
-			const struct i2c_device_id *id)
+static int cs2000_probe(struct i2c_client *client)
 {
 	struct cs2000_priv *priv;
 	struct device *dev = &client->dev;
@@ -498,9 +491,8 @@ static struct i2c_driver cs2000_driver = {
 		.name = "cs2000-cp",
 		.of_match_table = cs2000_of_match,
 	},
-	.probe		= cs2000_probe,
+	.probe_new 	= cs2000_probe,
 	.remove		= cs2000_remove,
-	.id_table	= cs2000_id,
 };
 
 module_i2c_driver(cs2000_driver);
