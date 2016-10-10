@@ -1,0 +1,17 @@
+#!/bin/sh
+
+files=`git status -s | grep "^ M" | printarg 2 | head -n 1`
+
+for f in $files; do
+  echo $f;
+  git add -p $f
+  git log --pretty=oneline $f
+  read a
+  git commit -sm "Remove unused i2c_device_id
+
+Convert to the interim probe_new() function, with struct i2c_device_id
+removed, as part of the conversion process to a simplified i2c-core probe
+function."
+  git commit --amend
+  git checkout -p $f
+done;
