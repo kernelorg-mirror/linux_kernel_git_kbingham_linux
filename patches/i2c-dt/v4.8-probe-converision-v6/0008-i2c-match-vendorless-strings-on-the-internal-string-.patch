@@ -1,0 +1,36 @@
+From c14367931d93e312a8d4d79adf7340b84dcbc633 Mon Sep 17 00:00:00 2001
+From: Kieran Bingham <kieran@bingham.xyz>
+Date: Tue, 25 Oct 2016 15:56:51 +0100
+Subject: [PATCHv6 08/11] i2c: match vendorless strings on the internal string
+ length
+
+If a user provides a shortened string to match a device to the sysfs i2c
+interface it will match on the first string that contains that string
+prefix.
+
+for example:
+  echo a 0x68 > /sys/bus/i2c/devices/i2c-2/new_device
+
+will match as3711, as3722, and ak8975 incorrectly.
+
+Signed-off-by: Kieran Bingham <kieran@bingham.xyz>
+---
+ drivers/i2c/i2c-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/i2c/i2c-core.c b/drivers/i2c/i2c-core.c
+index 01bce56f733a..50c9cfdb87b7 100644
+--- a/drivers/i2c/i2c-core.c
++++ b/drivers/i2c/i2c-core.c
+@@ -1708,7 +1708,7 @@ i2c_of_match_device_strip_vendor(const struct of_device_id *matches,
+ 		else
+ 			name++;
+ 
+-		if (!strncasecmp(client->name, name, strlen(client->name)))
++		if (!strncasecmp(client->name, name, strlen(name)))
+ 			return matches;
+ 	}
+ 
+-- 
+2.7.4
+
