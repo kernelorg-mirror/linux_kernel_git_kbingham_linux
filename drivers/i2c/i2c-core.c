@@ -1728,7 +1728,7 @@ const struct of_device_id
 	if (match)
 		return match;
 
-	return i2c_of_match_device_strip_vendor(matches, client);
+	return i2c_of_match_device_sysfs(matches, client);
 }
 EXPORT_SYMBOL_GPL(i2c_of_match_device);
 #else
