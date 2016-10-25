@@ -1,0 +1,62 @@
+From f0646468c944a522c8ffbd2a3f0d680d660f6005 Mon Sep 17 00:00:00 2001
+From: Lee Jones <lee.jones@linaro.org>
+Date: Thu, 5 Jun 2014 07:59:14 +0100
+Subject: [PATCHv6 05/11] i2c: Export i2c_match_id() for direct use by device
+ drivers
+
+When there was no other way to match a I2C device to driver i2c_match_id()
+was exclusively used.  However, now there are other types of tables which
+are commonly supplied, matching on an i2c_device_id table is used less
+frequently.  Instead of _always_ calling i2c_match_id() from within the
+framework, we only need to do so from drivers which have no other way of
+matching.  This patch makes i2c_match_id() available to the aforementioned
+device drivers.
+
+Acked-by: Grant Likely <grant.likely@linaro.org>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Tested-by: Kieran Bingham <kieran@bingham.xyz>
+Reviewed-by: Javier Martinez Canillas <javier@osg.samsung.com>
+Tested-by: Javier Martinez Canillas <javier@osg.samsung.com>
+Signed-off-by: Kieran Bingham <kieran@bingham.xyz>
+---
+ drivers/i2c/i2c-core.c | 3 ++-
+ include/linux/i2c.h    | 2 ++
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/i2c/i2c-core.c b/drivers/i2c/i2c-core.c
+index a69b47990ae7..f20c9b229570 100644
+--- a/drivers/i2c/i2c-core.c
++++ b/drivers/i2c/i2c-core.c
+@@ -586,7 +586,7 @@ static inline int acpi_i2c_install_space_handler(struct i2c_adapter *adapter)
+ 
+ /* ------------------------------------------------------------------------- */
+ 
+-static const struct i2c_device_id *i2c_match_id(const struct i2c_device_id *id,
++const struct i2c_device_id *i2c_match_id(const struct i2c_device_id *id,
+ 						const struct i2c_client *client)
+ {
+ 	if (!(id && client))
+@@ -599,6 +599,7 @@ static const struct i2c_device_id *i2c_match_id(const struct i2c_device_id *id,
+ 	}
+ 	return NULL;
+ }
++EXPORT_SYMBOL_GPL(i2c_match_id);
+ 
+ static int i2c_device_match(struct device *dev, struct device_driver *drv)
+ {
+diff --git a/include/linux/i2c.h b/include/linux/i2c.h
+index 2608e731e401..39f1131a58d1 100644
+--- a/include/linux/i2c.h
++++ b/include/linux/i2c.h
+@@ -243,6 +243,8 @@ struct i2c_client {
+ 
+ extern struct i2c_client *i2c_verify_client(struct device *dev);
+ extern struct i2c_adapter *i2c_verify_adapter(struct device *dev);
++extern const struct i2c_device_id *i2c_match_id(const struct i2c_device_id *id,
++					const struct i2c_client *client);
+ 
+ static inline struct i2c_client *kobj_to_i2c_client(struct kobject *kobj)
+ {
+-- 
+2.7.4
+
