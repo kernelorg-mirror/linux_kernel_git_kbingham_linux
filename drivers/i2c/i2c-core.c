@@ -1686,7 +1686,7 @@ struct i2c_adapter *of_get_i2c_adapter_by_node(struct device_node *node)
 EXPORT_SYMBOL(of_get_i2c_adapter_by_node);
 
 static const struct of_device_id*
-i2c_of_match_device_strip_vendor(const struct of_device_id *matches,
+i2c_of_match_device_sysfs(const struct of_device_id *matches,
 				  struct i2c_client *client)
 {
 	const char *name;
