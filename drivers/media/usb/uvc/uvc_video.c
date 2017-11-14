@@ -1069,6 +1069,8 @@ static int uvc_video_decode_start(struct uvc_streaming *stream,
 static void uvc_video_decode_data_work(struct work_struct *work)
 {
 	struct uvc_urb *uvc_urb = container_of(work, struct uvc_urb, work);
+	struct uvc_streaming *stream = uvc_urb->stream;
+	struct uvc_video_queue *queue = &stream->queue;
 	unsigned int i;
 	int ret;
 
@@ -1081,10 +1083,13 @@ static void uvc_video_decode_data_work(struct work_struct *work)
 		uvc_queue_buffer_release(op->buf);
 	}
 
-	ret = usb_submit_urb(uvc_urb->urb, GFP_ATOMIC);
-	if (ret  < 0) {
-		uvc_printk(KERN_ERR, "Failed to resubmit video URB (%d).\n",
-			ret);
+	if (!(queue->flags & UVC_QUEUE_STOPPING)) {
+		/* Prevent resubmitting URBs when shutting down */
+		ret = usb_submit_urb(uvc_urb->urb, GFP_ATOMIC);
+		if (ret  < 0) {
+			uvc_printk(KERN_ERR, "Failed to resubmit video URB (%d).\n",
+				ret);
+		}
 	}
 }
 
@@ -1364,6 +1369,20 @@ static void uvc_video_complete(struct urb *urb)
 	struct uvc_streaming *stream = uvc_urb->stream;
 	struct uvc_video_queue *queue = &stream->queue;
 	struct uvc_buffer *buf = NULL;
+	unsigned long flags;
+	bool stopping;
+
+	spin_lock_irqsave(&queue->irqlock, flags);
+	stopping = queue->flags & UVC_QUEUE_STOPPING;
+	spin_unlock_irqrestore(&queue->irqlock, flags);
+
+	/*
+	 * Simply accept and discard completed URB's without processing when the
+	 * stream is being shutdown. URB's will be killed and freed as part of
+	 * the uvc_video_enable(s, 0) action.
+	 */
+	if (stopping)
+		return;
 
 	switch (urb->status) {
 	case 0:
