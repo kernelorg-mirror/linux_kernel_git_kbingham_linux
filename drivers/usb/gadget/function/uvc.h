@@ -108,7 +108,9 @@ struct uvc_video {
 enum uvc_state {
 	UVC_STATE_DISCONNECTED,
 	UVC_STATE_CONNECTED,
+	UVC_STATE_STARTING,
 	UVC_STATE_STREAMING,
+	UVC_STATE_STOPPING,
 };
 
 struct uvc_device {
