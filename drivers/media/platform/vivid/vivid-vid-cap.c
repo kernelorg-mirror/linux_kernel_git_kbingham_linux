@@ -69,11 +69,11 @@ static const struct vivid_fmt formats_ovl[] = {
 
 /* Sizes must be in increasing order */
 static const struct v4l2_frmsize_discrete webcam_sizes[VIVID_WEBCAM_SIZES] = {
-	{  320, 180 },
-	{  640, 360 },
-	{ 1280, 720 },
-	{ 1920, 1080 },
-	{ 3840, 2160 },
+	{  640, 360 }, // 90 FPS needed
+	{  640, 400 }, // 60 FPS needed
+	{ 1280, 720 }, // 30 FPS needed
+	{ 1920, 1080 },// 10 FPS Max
+	{ 3840, 2160 },// 2 FPS Max
 };
 
 /*
@@ -82,15 +82,15 @@ static const struct v4l2_frmsize_discrete webcam_sizes[VIVID_WEBCAM_SIZES] = {
  */
 static const struct v4l2_fract webcam_intervals[VIVID_WEBCAM_IVALS] = {
 	{  1, 1 },
-	{  1, 2 },
-	{  1, 4 },
+	{  1, 2 }, // 4K : 1, 2 FPS
 	{  1, 5 },
-	{  1, 10 },
-	{  1, 15 },
+	{  1, 10 }, // 1080p : + 5, 10 FPS
 	{  1, 25 },
-	{  1, 30 },
+	{  1, 30 }, // 720p : + 25, 30 FPS
 	{  1, 50 },
-	{  1, 60 },
+	{  1, 60 }, // 400p : + 50, 60 FPS
+	{  1, 90 },
+	{  1, 120 }, // 360p : + 90, 120 FPS
 };
 
 static const struct v4l2_discrete_probe webcam_probe = {
